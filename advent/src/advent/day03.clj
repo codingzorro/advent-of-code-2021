@@ -119,5 +119,5 @@
   (* (apply-to-file #(gas-rating % (config :oxygen)) file-name)
      (apply-to-file #(gas-rating % (config :co2)) file-name)))
 
-(println (morning-puzzle  "resources/day03-input.txt"))
-(println (afternoon-puzzle "resources/day03-input.txt"))
+(println (morning-puzzle  "resources/day03-real-input.txt"))
+(println (afternoon-puzzle "resources/day03-real-input.txt"))
