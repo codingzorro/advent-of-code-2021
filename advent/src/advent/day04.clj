@@ -4,11 +4,12 @@
 (def SAMPLE-INPUT "resources/day04-test-input.txt")
 (def ^:private INPUT-TXT    "resources/day04-input.txt")
 (def ^:private BOARD-SIZE   5)
-(def ^:private COORDS (for [x (range BOARD-SIZE) y (range BOARD-SIZE)]
-                           [x y]))
+(def ^:private COORDS (for [row (range BOARD-SIZE) col (range BOARD-SIZE)]
+                           [row col]))
 
 (defrecord Game [numbers boards])
-(defrecord Cell [value x y])
+(defrecord Cell [value row col])
+(defrecord Board [rows cols])
 
 (defn load-numbers [line]
   (->> line
@@ -30,7 +31,9 @@
   (->> board
     (reduce into [] ,,,)
     ((fn [cells] (map #(vector %1 %2) cells COORDS)) ,,,)
-    (map (fn [[value [x y]]] (->Cell value x y)) ,,,)))
+    (map (fn [[value [row col]]] (->Cell value row col)) ,,,)
+    ))
+
 
 (defn- group-lines-by-board [lines]
   (->> lines
@@ -38,11 +41,19 @@
     (map #(drop 1 %) ,,,)
     ))
 
+(defn- to-rows-and-columns [seq-of-cells]
+  (let [rows    (map (fn [n] (filter #(= n (:row %)) seq-of-cells))
+                     (range BOARD-SIZE))
+        columns (map (fn [n] (filter #(= n (:col %)) seq-of-cells))
+                     (range BOARD-SIZE))]
+    (->Board rows columns)))
+
 (defn make-boards [lines]
   (->> lines
     (group-lines-by-board ,,,)
     (map each-line-is-seq-of-int ,,,)
     (map each-board-is-seq-of-cells ,,,)
+    (map to-rows-and-columns ,,,)
     ))
 
 (defn load-lines [file-name]
