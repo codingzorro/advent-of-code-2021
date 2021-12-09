@@ -1,8 +1,11 @@
 (ns advent.day04
   (:require [clojure.string :as s]))
 
-(def ^:private sample-input "resources/day04-test-input.txt")
-(def ^:private input-txt    "resources/day04-input.txt")
+(def SAMPLE-INPUT "resources/day04-test-input.txt")
+(def ^:private INPUT-TXT    "resources/day04-input.txt")
+(def ^:private BOARD-SIZE   5)
+(def ^:private COORDS (for [x (range BOARD-SIZE) y (range BOARD-SIZE)]
+                           [x y]))
 
 (defrecord Game [numbers boards])
 (defrecord Cell [value x y])
@@ -19,24 +22,28 @@
     (filter seq ,,,)
     (map #(Integer. %) ,,,)))
 
-(defn to-array-of-arrays [lines]
+(defn each-line-is-seq-of-int [lines]
   (->> lines
     (map parse-line ,,,)))
 
-(defn make-board [board]
-  (let [coords (for [x (range 5) y (range 5)] [x y])]
-    (->> board
-      (reduce into [] ,,,)
-      ((fn [cells] (map #(vector %1 %2) cells coords)) ,,,)
-      (map (fn [[value [x y]]] (->Cell value x y)) ,,,))))
+(defn each-board-is-seq-of-cells [board]
+  (->> board
+    (reduce into [] ,,,)
+    ((fn [cells] (map #(vector %1 %2) cells COORDS)) ,,,)
+    (map (fn [[value [x y]]] (->Cell value x y)) ,,,)))
+
+(defn- group-lines-by-board [lines]
+  (->> lines
+    (partition (inc BOARD-SIZE) ,,,)
+    (map #(drop 1 %) ,,,)
+    ))
 
 (defn make-boards [lines]
   (->> lines
-    (partition 6 ,,,)
-    (map #(drop 1 %) ,,,)
-    (map #(into [] %) ,,,)      ; each array is one board, i.e. has n lines
-    (map to-array-of-arrays ,,,)
-    (map make-board ,,,)))
+    (group-lines-by-board ,,,)
+    (map each-line-is-seq-of-int ,,,)
+    (map each-board-is-seq-of-cells ,,,)
+    ))
 
 (defn load-lines [file-name]
   (->> file-name
@@ -45,6 +52,8 @@
 
 ; ---
 (defn make-game []
-  (let [lines (load-lines sample-input)])
+  (let [lines (load-lines SAMPLE-INPUT)])
     (->Game (load-numbers(first lines))
             (make-boards (rest lines))))
+
+
