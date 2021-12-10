@@ -17,16 +17,14 @@
 (defn bingo? [board]
   false)
 
-(loop [next-numbers (:numbers game) read-numbers #{}]
-  (cond
-    (empty? next-numbers) "aus maus"
-    (some bingo? (:boards game))(some bingo? (:boards game))
-    :default (recur (rest next-numbers)
-                    (conj read-numbers (first next-numbers)))))
 
-(def read-numbers (into #{} (drop 20 (:numbers game))))
-(def b (first (:boards game)))
-(def row (first (:rows b)))
-(every? read-numbers (map :value row))
+(defn play [game]
+  (let [boards (:boards game)]
+    (loop [next-numbers (:numbers game)
+           past-numbers #{}]
+      (let [next-number  (first next-numbers)]
+        (if (or (empty? next-numbers) (some bingo? boards))
+           past-numbers
+           (recur (rest next-numbers) (conj past-numbers next-number)))))))
 
-(pp/pprint b)
+(play game)
