@@ -63,8 +63,8 @@
 
 ; ---
 (defn make-game []
-  (let [lines (load-lines SAMPLE-INPUT)])
+  (let [lines (load-lines SAMPLE-INPUT)]
     (->Game (load-numbers(first lines))
-            (make-boards (rest lines))))
+            (make-boards (rest lines)))))
 
 
