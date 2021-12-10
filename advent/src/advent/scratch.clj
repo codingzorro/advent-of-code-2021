@@ -14,8 +14,15 @@
 ;   (take 1)
 ;   ))
 
-(defn bingo? [board]
-  false)
+(defn check-x-cells [rows-or-cols past-numbers]
+  (->> rows
+    (map #(map :value %) ,,,)
+    (some #(every? past-numbers %) ,,,)
+    ))
+
+(defn bingo? [board past-numbers]
+  (or (check-x-cells (:rows board) past-numbers)
+      (check-x-cells (:cols board) past-numbers)))
 
 
 (defn play [game]
@@ -23,8 +30,19 @@
     (loop [next-numbers (:numbers game)
            past-numbers #{}]
       (let [next-number  (first next-numbers)]
-        (if (or (empty? next-numbers) (some bingo? boards))
+        (if (or (empty? next-numbers) (some #(bingo? % past-numbers) boards))
            past-numbers
            (recur (rest next-numbers) (conj past-numbers next-number)))))))
 
 (play game)
+
+; (def b (first (:boards game)))
+; (def rows (:rows b))
+; (def numbers (into #{} (take 10 (:numbers game))))
+
+
+; (every? numbers (map :value (first rows)))
+
+; (first (map #(map :value %) rows))
+
+; (check-x-cells (:rows b))
