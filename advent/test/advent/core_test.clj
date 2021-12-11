@@ -1,6 +1,7 @@
 (ns advent.core-test
   (:require [clojure.test :refer :all]
-            [advent.day04 :refer :all]))
+            [advent.day04 :refer :all]
+            [clojure.pprint :as pp]))
 
 (def PAST-NUMBERS (set [7 4 9 5 11 17 23 2 0 14 21 24]))
 (def REFERENCE-COL [15 18 8 11 21])
@@ -13,8 +14,9 @@
 (defn all-in? [cells set-of-numbers]
   (every? set-of-numbers (map :value cells)))
 
-(defn good-lines [board rows-or-cols numbers]
-  (seq (filter #(all-in? % numbers) (rows-or-cols board))))
+(defn is-bingo-board? [board numbers]
+  (or (seq (filter #(all-in? % numbers) (:rows board)))
+      (seq (filter #(all-in? % numbers) (:cols board)))))
 
 (deftest board-2-col-2-test
   (testing "can you get a col"
@@ -39,4 +41,7 @@
 (def row1 (first (:rows board-3)))
 (def col1 (second (:cols board-2)))
 
+; (when (is-bingo-board? board-3 PAST-NUMBERS)
+;   (pp/pprint "bingo!"))
 
+(some #(is-bingo-board? % PAST-NUMBERS) (:boards game))
