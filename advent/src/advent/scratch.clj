@@ -38,8 +38,9 @@
 ;------
 
 (def numbers (into #{} (take 12 (:numbers game))))
-(filter (fn [board] (or (good-lines board :rows numbers)
-                        (good-lines board :cols numbers))) (:boards game))
+(defn check-boards [game numbers]
+  (filter (or (good-lines board :rows numbers)
+              (good-lines board :cols numbers))) (:boards game))
 
 (defn bingo? [board past-numbers]
   (or (#(check-x-cells (:rows %) past-numbers) board)
@@ -50,14 +51,15 @@
   (let [boards (:boards game)]
     (loop [next-numbers (:numbers game)
            past-numbers #{}]
-      (let [next-number  (first next-numbers)]
+      (let [winners  (check-boards game past-numbers)]
         (cond (empty? next-numbers) "no winners"
-              (seq #(map bingo? % past-numbers) boards) (some #(bingo? % past-numbers) boards)
-              :otherwise (recur (rest next-numbers) (conj past-numbers next-number)))))))
+              (seq winners) (first winners)
+              :otherwise (recur (rest next-numbers) (conj past-numbers (first (next-numbers))))
+              )))))
 
-; (play game)
+(pp/pprint (play game))
 
-(def b (first (:boards game)))
+; (def b (first (:boards game)))
 
 
-(pp/pprint (some #(good-lines % :rows numbers) (:boards game)))
+; (pp/pprint (some #(good-lines % :rows numbers) (:boards game)))
