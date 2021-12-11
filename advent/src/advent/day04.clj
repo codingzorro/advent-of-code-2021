@@ -1,9 +1,10 @@
 (ns advent.day04
-  (:require [clojure.string :as s]
+  (:require [clojure.set :as s]
+            [clojure.string :as string]
             [clojure.pprint :as pp]))
 
 (def SAMPLE-INPUT "resources/day04-test-input.txt")
-(def ^:private INPUT-TXT    "resources/day04-input.txt")
+(def ^:private INPUT-TXT    "resources/day04-real-input.txt")
 (def ^:private BOARD-SIZE   5)
 (def ^:private COORDS (for [row (range BOARD-SIZE) col (range BOARD-SIZE)]
                            [row col]))
@@ -11,16 +12,17 @@
 (defrecord Game [numbers boards])
 (defrecord Cell [value row col])
 (defrecord Board [rows cols])
+(defrecord Winner [board past-numbers])
 
 (defn load-numbers [line]
   (->> line
-    (#(s/split % #",") ,,,)
+    (#(string/split % #",") ,,,)
     (map #(Integer. %) ,,,)
     (into [] ,,,)))
 
 (defn parse-line [line]
   (->> line
-    (#(s/split % #" ") ,,,)
+    (#(string/split % #" ") ,,,)
     (filter seq ,,,)
     (map #(Integer. %) ,,,)))
 
@@ -60,32 +62,39 @@
 (defn load-lines [file-name]
   (->> file-name
     (slurp)
-    (#(s/split % #"\r\n") ,,,)))
+    (#(string/split % #"\r\n") ,,,)))
 
 ; ---
 (defn all-in? [cells set-of-numbers]
   (every? set-of-numbers (map :value cells)))
 
 (defn is-bingo-board? [board numbers]
-  (or (seq (filter #(all-in? % numbers) (:rows board)))
-      (seq (filter #(all-in? % numbers) (:cols board)))))
+  (let [numbers (set numbers)]
+    (or (seq (filter #(all-in? % numbers) (:rows board)))
+        (seq (filter #(all-in? % numbers) (:cols board))))))
 
 (defn play [game]
   (let [boards (:boards game)]
     (loop [next-numbers (:numbers game)
-           past-numbers #{}]
+           past-numbers []]
       (let [winner (filter #(is-bingo-board? % past-numbers) boards)]
         (cond (empty? next-numbers) "no winners"
-              (seq winner) winner
-              :otherwise (recur (rest next-numbers) (conj past-numbers (first next-numbers))))
-              ))))
+              (seq winner) (->Winner (first winner) past-numbers)
+              :otherwise (recur (rest next-numbers) (conj past-numbers (first next-numbers))))))))
 
 (defn make-game []
-  (let [lines (load-lines SAMPLE-INPUT)]
+  (let [lines (load-lines INPUT-TXT)]
     (->Game (load-numbers(first lines))
             (make-boards (rest lines)))))
 
 
 (def game (make-game))
 
-(pp/pprint (play game))
+(def winner (play game))
+
+(def rows (:rows (:board winner)))
+(map :value (first rows))
+(def summe (apply + (s/difference (set (map :value (apply concat rows))) (set (:past-numbers winner)))))
+(def letzte (last (:past-numbers winner)))
+
+(* summe letzte)
