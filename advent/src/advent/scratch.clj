@@ -33,16 +33,6 @@
   (filter #(or (good-lines % :rows numbers)
                (good-lines % :cols numbers)) (:boards game)))
 
-(defn play [game]
-  (let [boards (:boards game)]
-    (loop [next-numbers (:numbers game)
-           past-numbers #{}]
-      (let [winners  (check-boards game past-numbers)]
-        (cond (empty? next-numbers) "no winners"
-              (seq winners) :foo ;[past-numbers (first winners)]
-              :otherwise (recur (rest next-numbers) (conj past-numbers (first (next-numbers))))
-              )))))
-
 https://twitter.com/nayibbukele/status/1469045510442864642?s=20
 (play game)
 https://twitter.com/Cernovich/status/1469168999950798849?s=20

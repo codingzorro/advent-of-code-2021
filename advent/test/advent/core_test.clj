@@ -7,16 +7,9 @@
 (def REFERENCE-COL [15 18 8 11 21])
 (def REFERENCE-ROW [14 21 17 24 4])
 
-(def game (make-game))
-(def board-2 (second (:boards game)))
-(def board-3 (nth (:boards game) 2))
-
-(defn all-in? [cells set-of-numbers]
-  (every? set-of-numbers (map :value cells)))
-
-(defn is-bingo-board? [board numbers]
-  (or (seq (filter #(all-in? % numbers) (:rows board)))
-      (seq (filter #(all-in? % numbers) (:cols board)))))
+(def test-game (make-game))
+(def board-2 (second (:boards test-game)))
+(def board-3 (nth (:boards test-game) 2))
 
 (deftest board-2-col-2-test
   (testing "can you get a col"
@@ -44,4 +37,5 @@
 ; (when (is-bingo-board? board-3 PAST-NUMBERS)
 ;   (pp/pprint "bingo!"))
 
-(some #(is-bingo-board? % PAST-NUMBERS) (:boards game))
+(filter (fn [board] (is-bingo-board? board PAST-NUMBERS)) (:boards test-game))
+

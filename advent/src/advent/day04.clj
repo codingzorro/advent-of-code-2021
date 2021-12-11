@@ -1,5 +1,6 @@
 (ns advent.day04
-  (:require [clojure.string :as s]))
+  (:require [clojure.string :as s]
+            [clojure.pprint :as pp]))
 
 (def SAMPLE-INPUT "resources/day04-test-input.txt")
 (def ^:private INPUT-TXT    "resources/day04-input.txt")
@@ -62,9 +63,29 @@
     (#(s/split % #"\r\n") ,,,)))
 
 ; ---
+(defn all-in? [cells set-of-numbers]
+  (every? set-of-numbers (map :value cells)))
+
+(defn is-bingo-board? [board numbers]
+  (or (seq (filter #(all-in? % numbers) (:rows board)))
+      (seq (filter #(all-in? % numbers) (:cols board)))))
+
+(defn play [game]
+  (let [boards (:boards game)]
+    (loop [next-numbers (:numbers game)
+           past-numbers #{}]
+      (let [winner (filter #(is-bingo-board? % past-numbers) boards)]
+        (cond (empty? next-numbers) "no winners"
+              (seq winner) winner
+              :otherwise (recur (rest next-numbers) (conj past-numbers (first next-numbers))))
+              ))))
+
 (defn make-game []
   (let [lines (load-lines SAMPLE-INPUT)]
     (->Game (load-numbers(first lines))
             (make-boards (rest lines)))))
 
 
+(def game (make-game))
+
+(pp/pprint (play game))
