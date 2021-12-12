@@ -29,10 +29,6 @@
 ; (some #(good-lines % :rows numbers) (:boards game))
 ;------
 
-(defn check-boards [game numbers]
-  (filter #(or (good-lines % :rows numbers)
-               (good-lines % :cols numbers)) (:boards game)))
-
 https://twitter.com/nayibbukele/status/1469045510442864642?s=20
 (play game)
 https://twitter.com/Cernovich/status/1469168999950798849?s=20
