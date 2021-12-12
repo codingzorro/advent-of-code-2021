@@ -38,4 +38,5 @@
 ;   (pp/pprint "bingo!"))
 
 (filter (fn [board] (is-bingo-board? board PAST-NUMBERS)) (:boards test-game))
+(filter #(is-bingo-board? % PAST-NUMBERS) (:boards test-game))
 
