@@ -79,10 +79,30 @@
   (let [boards (:boards game)]
     (loop [next-numbers (:numbers game)
            past-numbers []]
-      (let [winner (filter #(is-bingo-board? % past-numbers) boards)]
+      (let [winners (filter #(is-bingo-board? % past-numbers) boards)]
         (cond (empty? next-numbers) "no winners"
-              (seq winner) (->Winner (first winner) past-numbers)
+              (seq winners) (->Winner (first winners) past-numbers)
               :otherwise (recur (rest next-numbers) (conj past-numbers (first next-numbers))))))))
+
+(defn fingerprint [b]
+  (map :value (first (:rows b))))
+
+(defn afternoon-play
+  "returns the winning board"
+  [game]
+  (loop [next-numbers   (:numbers game)
+         past-numbers   []
+         boards         (:boards game)
+         winning-boards []]
+    (let [winners (filter #(is-bingo-board? % past-numbers) boards)
+          losers (remove #(is-bingo-board? % past-numbers) boards)]
+      (if (or (empty? next-numbers) (empty? boards))
+        (->Winner (last winning-boards) (butlast past-numbers))
+        (recur (rest next-numbers)
+               (conj past-numbers (first next-numbers))
+               losers
+               (into winning-boards winners))))))
+
 
 (defn make-game []
   (let [lines (load-lines INPUT-TXT)]
@@ -99,10 +119,11 @@
                                          (set called-numbers))]
     (* (apply + non-called-numbers) last-number)))
 
-
-; print the morning score
+; print the afternoon score
 (pp/pprint
-(->> (make-game)
-  morning-play
-  score)
-)
+  (->> (make-game)
+    afternoon-play
+    score))
+
+
+
