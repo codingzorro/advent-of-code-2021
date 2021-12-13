@@ -73,7 +73,9 @@
     (or (seq (filter #(all-in? % numbers) (:rows board)))
         (seq (filter #(all-in? % numbers) (:cols board))))))
 
-(defn play [game]
+(defn morning-play
+  "returns the winning board"
+  [game]
   (let [boards (:boards game)]
     (loop [next-numbers (:numbers game)
            past-numbers []]
@@ -88,13 +90,19 @@
             (make-boards (rest lines)))))
 
 
-(def game (make-game))
+(defn score [winner]
+  (let [rows               (:rows (:board winner))
+        numbers-on-board   (map :value (apply concat rows))
+        called-numbers     (:past-numbers winner)
+        last-number        (last called-numbers)
+        non-called-numbers (s/difference (set numbers-on-board)
+                                         (set called-numbers))]
+    (* (apply + non-called-numbers) last-number)))
 
-(def winner (play game))
 
-(def rows (:rows (:board winner)))
-(map :value (first rows))
-(def summe (apply + (s/difference (set (map :value (apply concat rows))) (set (:past-numbers winner)))))
-(def letzte (last (:past-numbers winner)))
-
-(* summe letzte)
+; print the morning score
+(pp/pprint
+(->> (make-game)
+  morning-play
+  score)
+)
