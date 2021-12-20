@@ -1,4 +1,5 @@
-(ns advent.day03)
+(ns advent.day03
+  (:require [advent.utilities :as u]))
 
 (def ^:private mini-data ["00100" "11110" "10110" "10111" "10101" "01111"
                           "00111" "11100" "10000" "11001" "00010" "01010"])
@@ -44,11 +45,6 @@
 
 (defn- to-integer [bin-string]
   (Integer/parseInt bin-string 2))
-
-(defn- apply-to-file [f file-name]
-  (with-open [rdr (clojure.java.io/reader file-name)]
-    (->> (line-seq rdr)
-    (f ,,,))))
 
 (defn- char-at [s pos]
   ((into [] s) pos))
@@ -113,11 +109,11 @@
 (defn morning-puzzle
   "store the contents of a file as a vector of lines"
   [file-name]
-  (apply-to-file power-consumption file-name))
+  (u/apply-to-file power-consumption file-name))
 
 (defn afternoon-puzzle [file-name]
-  (* (apply-to-file #(gas-rating % (config :oxygen)) file-name)
-     (apply-to-file #(gas-rating % (config :co2)) file-name)))
+  (* (u/apply-to-file #(gas-rating % (config :oxygen)) file-name)
+     (u/apply-to-file #(gas-rating % (config :co2)) file-name)))
 
 (println (morning-puzzle  "resources/day03-real-input.txt"))
 (println (afternoon-puzzle "resources/day03-real-input.txt"))
