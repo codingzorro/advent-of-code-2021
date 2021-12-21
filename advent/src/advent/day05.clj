@@ -31,11 +31,28 @@
 (def sample (first (parse-file TEST-INPUT)))
 (def sample-2 (second (parse-file TEST-INPUT)))
 
-(defn generate-points [coords]
+(defn generator-parameters
+  "deliver the parameters to transform [(1,1) (1,3)]' to
+   [(1,1) (1,2) (1,3)]"
+  [coords]
   (if (= (:x1 coords) (:x2 coords))
     (let [[from to] (sort [(:y1 coords) (:y2 coords)])]
-      (into [] (map #(vector %1 %2) (repeat (:x1 coords))
-                                    (range from (inc to)))))
+      {:constant :x1, :from from, :to to})
     (let [[from to] (sort [(:x1 coords) (:x2 coords)])]
-          (into [] (map #(vector %1 %2) (repeat (:y1 coords))
-                                        (range from (inc to)))))))
+      {:constant :y1, :from from, :to to})))
+
+
+(defn generate-points [coords]
+  (let [{:keys [constant from to]} (generator-parameters coords)]
+    (if (= constant :x1)
+      (into [] (map #(vector %1 %2) (repeat (constant coords))
+                                    (range from (inc to))))
+      (into [] (map #(vector %1 %2) (range from (inc to))
+                                    (repeat (constant coords)))))))
+
+(->> TEST-INPUT
+  parse-file
+  (map generate-points ,,,)
+  second
+  )
+
