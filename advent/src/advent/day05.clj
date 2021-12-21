@@ -28,5 +28,14 @@
     ))
 
 
-(parse-file REAL-INPUT)
+(def sample (first (parse-file TEST-INPUT)))
+(def sample-2 (second (parse-file TEST-INPUT)))
 
+(defn generate-points [coords]
+  (if (= (:x1 coords) (:x2 coords))
+    (let [[from to] (sort [(:y1 coords) (:y2 coords)])]
+      (into [] (map #(vector %1 %2) (repeat (:x1 coords))
+                                    (range from (inc to)))))
+    (let [[from to] (sort [(:x1 coords) (:x2 coords)])]
+          (into [] (map #(vector %1 %2) (repeat (:y1 coords))
+                                        (range from (inc to)))))))
