@@ -1,4 +1,4 @@
-(ns advent.day04
+(ns advent.day05
   (:require [advent.utilities :as u]
             [clojure.string :as string]))
 
@@ -53,6 +53,12 @@
 (->> TEST-INPUT
   parse-file
   (map generate-points ,,,)
-  second
+  sort
+  println
   )
+
+(filter
+#(< 1 (second %))
+(frequencies (sort [[7 7] [8 7] [9 7] [8 7]]))
+)
 
