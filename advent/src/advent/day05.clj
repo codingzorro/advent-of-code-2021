@@ -43,8 +43,14 @@
       {:constant :y1, :from from, :to to})))
 
 
-(defn generate-points
-  "Generates the points defined by a Two-Points instance"
+(defn line-type [two-points]
+  :horizontal-vertical)
+
+; Generates the points defined by a Two-Points instance
+(defmulti generate-points line-type)
+
+(defmethod generate-points
+  :horizontal-vertical
   [two-points]
   (let [{:keys [constant from to]} (generator-parameters two-points)]
     (if (= constant :x1)
