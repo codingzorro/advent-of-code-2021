@@ -6,6 +6,7 @@
 (def TEST-INPUT "resources/day05-morning-test-input.txt")
 (def REAL-INPUT "resources/day05-real-input.txt")
 
+
 (defrecord Two-Points [x1 y1 x2 y2])
 
 (defn line-to-line
@@ -34,28 +35,28 @@
 (defn generator-parameters
   "deliver the parameters to transform [(1,1) (1,3)]' to
    [(1,1) (1,2) (1,3)]"
-  [coords]
-  (if (= (:x1 coords) (:x2 coords))
-    (let [[from to] (sort [(:y1 coords) (:y2 coords)])]
+  [two-points]
+  (if (= (:x1 two-points) (:x2 two-points))
+    (let [[from to] (sort [(:y1 two-points) (:y2 two-points)])]
       {:constant :x1, :from from, :to to})
-    (let [[from to] (sort [(:x1 coords) (:x2 coords)])]
+    (let [[from to] (sort [(:x1 two-points) (:x2 two-points)])]
       {:constant :y1, :from from, :to to})))
 
 
 (defn generate-points
-  "Generates the points from and including start and end point"
-  [coords]
-  (let [{:keys [constant from to]} (generator-parameters coords)]
+  "Generates the points defined by a Two-Points instance"
+  [two-points]
+  (let [{:keys [constant from to]} (generator-parameters two-points)]
     (if (= constant :x1)
-      (into [] (map #(vector %1 %2) (repeat (constant coords))
+      (into [] (map #(vector %1 %2) (repeat (constant two-points))
                                     (range from (inc to))))
       (into [] (map #(vector %1 %2) (range from (inc to))
-                                    (repeat (constant coords)))))))
+                                    (repeat (constant two-points)))))))
 
 (defn morning-puzzle
   "solves the morning puzzle of Day 5"
   [file-name]
-  (->> REAL-INPUT
+  (->> file-name
     parse-file
     (map generate-points ,,,)
     (reduce into [] ,,,)
