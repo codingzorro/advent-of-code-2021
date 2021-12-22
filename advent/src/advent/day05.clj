@@ -29,17 +29,14 @@
     ))
 
 
-(def sample (first (parse-file TEST-INPUT)))
-(def sample-2 (second (parse-file TEST-INPUT)))
-
 (defn generator-parameters
   "deliver the parameters to transform [(1,1) (1,3)]' to
    [(1,1) (1,2) (1,3)]"
-  [two-points]
-  (if (= (:x1 two-points) (:x2 two-points))
-    (let [[from to] (sort [(:y1 two-points) (:y2 two-points)])]
+  [{:keys [x1 y1 x2 y2]}]
+  (if (= x1 x2)
+    (let [[from to] (sort [y1 y2])]
       {:constant :x1, :from from, :to to})
-    (let [[from to] (sort [(:x1 two-points) (:x2 two-points)])]
+    (let [[from to] (sort [x1 x2])]
       {:constant :y1, :from from, :to to})))
 
 
