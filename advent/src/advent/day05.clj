@@ -66,7 +66,6 @@
     parse-file
     (map generate-points ,,,)
     (reduce into [] ,,,)
-    (#(into % [[1 3]]) ,,,)
     sort
     frequencies
     (filter #(> (second %) 1) ,,,)
