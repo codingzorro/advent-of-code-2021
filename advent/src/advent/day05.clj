@@ -3,7 +3,7 @@
             [clojure.string :as string]))
 
 
-(def TEST-INPUT "resources/day05-morning-test-input.txt")
+(def TEST-INPUT "resources/day05-afternoon-test-input.txt")
 (def REAL-INPUT "resources/day05-real-input.txt")
 
 
@@ -28,13 +28,12 @@
 (defn parse-file
   "convert the relevant lines in the file to `Two-Points` instances"
   [file-name]
-  (->> REAL-INPUT
+  (->> file-name
     (slurp ,,,)
     (#(string/split % #"\n") ,,,)
     (map line-to-line ,,,)
     (map #(apply ->Two-Points %) ,,,)
-;   (filter #(or (horizontal-or-vertical? %) (diagonal? %)) ,,,)
-    (filter #(horizontal-or-vertical? %) ,,,)
+    (filter #(or (horizontal-or-vertical? %) (diagonal? %)) ,,,)
     ))
 
 
@@ -50,10 +49,10 @@
 
 
 (defn line-type [two-points]
-  (let []
-    (cond (horizontal-or-vertical? two-points) :horizontal-vertical
-          (diagonal? two-points)               :diagonal
-          :otherwise                           :unknown)))
+  (cond
+        (diagonal? two-points)               :diagonal
+        (horizontal-or-vertical? two-points) :horizontal-vertical
+        :otherwise                           :unknown))
 
 ; Generates the points defined by a Two-Points instance
 (defmulti generate-points line-type)
@@ -70,12 +69,24 @@
 
 (defmethod generate-points
   :diagonal
-  [two-points])
+  [two-points]
+  (let [{:keys [x1 y1 x2 y2]} two-points]
+    (if (< x1 x2)
+        (if (< y1 y2)
+            (into [] (map #(vector %1 %2) (range x1 (inc x2))
+                                          (range y1 (inc y2))))
+            (into [] (map #(vector %1 %2) (range x1 (inc x2))
+                                          (range y1 (dec y2) -1))))
+        (if (< y1 y2)
+            (sort (into [] (map #(vector %1 %2) (range x1 (dec x2) -1)
+                                                (range y1 (inc y2)))))
+            (sort (into [] (map #(vector %1 %2) (range x1 (dec x2) -1)
+                                                (range y1 (dec y2) -1))))))))
 
-(defn morning-puzzle
-  "solves the morning puzzle of Day 5"
+(defn puzzle
+  "solves the afternoon puzzle of Day 5"
   [file-name]
-  (->> TEST-INPUT
+  (->> file-name
     parse-file
     (map generate-points ,,,)
     (reduce into [] ,,,)
@@ -85,4 +96,5 @@
     count
   ))
 
-(morning-puzzle REAL-INPUT)
+(println (puzzle REAL-INPUT))
+
