@@ -6,7 +6,7 @@
 (def TEST-INPUT "resources/day05-test-input.txt")
 (def REAL-INPUT "resources/day05-real-input.txt")
 
-(defrecord Coords [x1 y1 x2 y2])
+(defrecord Two-Points [x1 y1 x2 y2])
 
 (defn line-to-line
   "parses the four coordinates from a file line"
@@ -17,13 +17,13 @@
 
 
 (defn parse-file
-  "convert the relevant lines in the file to `Coords` instances"
+  "convert the relevant lines in the file to `Two-Points` instances"
   [file-name]
   (->> file-name
     (slurp ,,,)
     (#(string/split % #"\n") ,,,)
     (map line-to-line ,,,)
-    (map #(apply ->Coords %) ,,,)
+    (map #(apply ->Two-Points %) ,,,)
     (filter #(or (= (:x1 %) (:x2 %)) (= (:y1 %) (:y2 %))) ,,,)
     ))
 
