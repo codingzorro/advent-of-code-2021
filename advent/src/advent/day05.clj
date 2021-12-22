@@ -27,13 +27,13 @@
 
 (defn parse-file
   "convert the relevant lines in the file to `Two-Points` instances"
-  [file-name]
+  [f file-name]
   (->> file-name
     (slurp ,,,)
     (#(string/split % #"\n") ,,,)
     (map line-to-line ,,,)
     (map #(apply ->Two-Points %) ,,,)
-    (filter #(or (horizontal-or-vertical? %) (diagonal? %)) ,,,)
+    (filter f ,,,)
     ))
 
 
@@ -85,9 +85,9 @@
 
 (defn puzzle
   "solves the afternoon puzzle of Day 5"
-  [file-name]
+  [f file-name]
   (->> file-name
-    parse-file
+    (parse-file f ,,,)
     (map generate-points ,,,)
     (reduce into [] ,,,)
     sort
@@ -96,5 +96,7 @@
     count
   ))
 
-(println (puzzle REAL-INPUT))
+(def with-diagonals #(or (horizontal-or-vertical? %) (diagonal? %)))
+(def without-diagonals #(horizontal-or-vertical? %))
+(println (puzzle without-diagonals REAL-INPUT))
 
