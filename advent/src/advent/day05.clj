@@ -33,8 +33,7 @@
     (#(string/split % #"\n") ,,,)
     (map line-to-line ,,,)
     (map #(apply ->Two-Points %) ,,,)
-    (filter f ,,,)
-    ))
+    (filter f ,,,)))
 
 
 (defn generator-parameters
@@ -93,10 +92,13 @@
     sort
     frequencies
     (filter #(> (second %) 1) ,,,)
-    count
-  ))
+    count))
 
-(def with-diagonals #(or (horizontal-or-vertical? %) (diagonal? %)))
-(def without-diagonals #(horizontal-or-vertical? %))
-(println (puzzle without-diagonals REAL-INPUT))
+(defn with-diagonals? [two-points]
+  (or (horizontal-or-vertical? two-points) (diagonal? two-points)))
+
+(defn without-diagonals? [two-points]
+  (horizontal-or-vertical? two-points))
+
+(println (puzzle with-diagonals? REAL-INPUT))
 
