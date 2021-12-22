@@ -16,16 +16,25 @@
         [_ x1 y1 x2 y2] (re-find regex s)]
     (map #(Integer. %) [x1 y1 x2 y2])))
 
+(defn horizontal-or-vertical? [two-points]
+  (let [{:keys [x1 x2 y1 y2]} two-points]
+    (or (= x1 x2) (= y1 y2))))
+
+(defn diagonal? [two-points]
+  (let [{:keys [x1 x2 y1 y2]} two-points
+        delta (fn [a b] (Math/abs (- a b)))]
+    (= (delta x1 x2) (delta y1 y2))))
 
 (defn parse-file
   "convert the relevant lines in the file to `Two-Points` instances"
   [file-name]
-  (->> file-name
+  (->> REAL-INPUT
     (slurp ,,,)
     (#(string/split % #"\n") ,,,)
     (map line-to-line ,,,)
     (map #(apply ->Two-Points %) ,,,)
-    (filter #(or (= (:x1 %) (:x2 %)) (= (:y1 %) (:y2 %))) ,,,)
+;   (filter #(or (horizontal-or-vertical? %) (diagonal? %)) ,,,)
+    (filter #(horizontal-or-vertical? %) ,,,)
     ))
 
 
@@ -41,7 +50,10 @@
 
 
 (defn line-type [two-points]
-  :horizontal-vertical)
+  (let []
+    (cond (horizontal-or-vertical? two-points) :horizontal-vertical
+          (diagonal? two-points)               :diagonal
+          :otherwise                           :unknown)))
 
 ; Generates the points defined by a Two-Points instance
 (defmulti generate-points line-type)
@@ -56,16 +68,21 @@
       (into [] (map #(vector %1 %2) (range from (inc to))
                                     (repeat (constant two-points)))))))
 
+(defmethod generate-points
+  :diagonal
+  [two-points])
+
 (defn morning-puzzle
   "solves the morning puzzle of Day 5"
   [file-name]
-  (->> file-name
+  (->> TEST-INPUT
     parse-file
     (map generate-points ,,,)
     (reduce into [] ,,,)
     sort
     frequencies
     (filter #(> (second %) 1) ,,,)
-    count))
+    count
+  ))
 
 (morning-puzzle REAL-INPUT)
