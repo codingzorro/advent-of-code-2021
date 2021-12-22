@@ -42,7 +42,9 @@
       {:constant :y1, :from from, :to to})))
 
 
-(defn generate-points [coords]
+(defn generate-points
+  "Generates the points from and including start and end point"
+  [coords]
   (let [{:keys [constant from to]} (generator-parameters coords)]
     (if (= constant :x1)
       (into [] (map #(vector %1 %2) (repeat (constant coords))
@@ -50,15 +52,17 @@
       (into [] (map #(vector %1 %2) (range from (inc to))
                                     (repeat (constant coords)))))))
 
-(->> TEST-INPUT
-  parse-file
-  (map generate-points ,,,)
-  sort
-  println
-  )
+(defn morning-puzzle
+  "solves the morning puzzle of Day 5"
+  [file-name]
+  (->> REAL-INPUT
+    parse-file
+    (map generate-points ,,,)
+    (reduce into [] ,,,)
+    (#(into % [[1 3]]) ,,,)
+    sort
+    frequencies
+    (filter #(> (second %) 1) ,,,)
+    count))
 
-(filter
-#(< 1 (second %))
-(frequencies (sort [[7 7] [8 7] [9 7] [8 7]]))
-)
-
+(morning-puzzle REAL-INPUT)
