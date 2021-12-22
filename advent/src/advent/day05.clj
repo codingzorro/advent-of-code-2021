@@ -3,7 +3,7 @@
             [clojure.string :as string]))
 
 
-(def TEST-INPUT "resources/day05-test-input.txt")
+(def TEST-INPUT "resources/day05-morning-test-input.txt")
 (def REAL-INPUT "resources/day05-real-input.txt")
 
 (defrecord Two-Points [x1 y1 x2 y2])
