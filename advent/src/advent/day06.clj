@@ -4,6 +4,8 @@
 
 (def LIFETIME 7)
 
+(def bd-lookup (atom {}))
+(def fm-lookup (atom {}))
 
 (defn birth-dates
   "find the 'date' when a new fish are born depending on the parent's counter"
@@ -16,10 +18,18 @@
 (def bd (memoize birth-dates))
 
 (defn fish-maker [[^Integer counter ^Integer days-to-go]]
-  (let [birth-dates (bd counter days-to-go)]
-    (pmap #(vector 5 (- days-to-go %1 3)) birth-dates)))
+  (let [birth-dates (bd counter days-to-go)
+        new-days-to-go (- days-to-go 3)
+        values (pmap #(- new-days-to-go %) birth-dates)]
+    (vec (map #(vector %1 %2) (repeat 5) values))))
 
-(def fm (memoize fish-maker))
+(defn fm [[^Integer counter ^Integer days-to-go]]
+  (let [found-value (@fm-lookup [counter days-to-go])]
+    (if found-value
+      found-value
+      (let [new-value (fish-maker [counter days-to-go])]
+        (swap! fm-lookup assoc [counter days-to-go] new-value)
+        new-value))))
 
 (def DAYS 80)
 ;(def sample [3 4 3 1 2])
@@ -34,11 +44,10 @@
   (if (empty? all-fish)
     result
     (let [[the-fish & the-rest] all-fish]
-      (when (zero? (rem counter 10000000)) (println counter))
+      (when (zero? (rem counter 10000000)) (println counter (count @fm-lookup)))
       (recur (into the-rest (fm the-fish))
              (conj result the-fish)
              (inc counter)))))
 )
 )
-
 
