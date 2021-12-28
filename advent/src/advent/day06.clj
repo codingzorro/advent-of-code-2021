@@ -43,21 +43,18 @@
 (defn -main [& args]
 (time
 (println
-(count
-(loop [all-fish data result [] counter 0]
+(loop [all-fish data result 0]
   (if (empty? all-fish)
     result
     (let [[the-fish & the-rest] all-fish]
-;     (when (zero? (rem counter 10000000)) (println counter (count @bd-lookup) (count @fm-lookup)))
       (recur (into the-rest (let [[^Integer counter ^Integer days-to-go] the-fish]
                               (or
                                 (@fm-lookup [counter days-to-go])
                                 (let [new-value (fish-maker [counter days-to-go])]
                                         (swap! fm-lookup assoc [counter days-to-go] new-value)
                                         new-value))))
-             (conj result the-fish)
-             (inc counter)))))
-)
+             (inc result)
+             ))))
 )
 )
 )
