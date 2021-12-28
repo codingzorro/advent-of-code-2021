@@ -16,12 +16,11 @@
                                                      (range 0 days-to-go 7))))))
 
 (defn bd [^Integer counter ^Integer days-to-go]
-  (let [found-value (@bd-lookup [counter days-to-go])]
-    (if found-value
-      found-value
-      (let [new-value (birth-dates counter days-to-go)]
-        (swap! bd-lookup assoc [counter days-to-go] new-value)
-        new-value))))
+  (or
+    (@bd-lookup [counter days-to-go])
+    (let [new-value (birth-dates counter days-to-go)]
+          (swap! bd-lookup assoc [counter days-to-go] new-value)
+          new-value)))
 
 
 (defn fish-maker [[^Integer counter ^Integer days-to-go]]
