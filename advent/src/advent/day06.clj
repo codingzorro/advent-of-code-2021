@@ -77,6 +77,7 @@
                                   (reduce into [] ,,,)
                                   (to-frequencies ,,,)
                                   )]
+            (println (count next-generation))
             (recur next-generation (+ result (how-many next-generation)))))))))
 
 
