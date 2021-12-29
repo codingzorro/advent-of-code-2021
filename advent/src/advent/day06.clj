@@ -69,7 +69,7 @@
 (defn -main [& args]
   (time
     (println
-      (loop [all-fish (to-frequencies data) result 0]
+      (loop [all-fish (to-frequencies data) result (count data)]
         (if (empty? all-fish)
           result
           (let [next-generation (->> all-fish
