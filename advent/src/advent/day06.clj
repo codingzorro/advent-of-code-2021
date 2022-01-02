@@ -33,52 +33,50 @@
         values (pmap #(- new-days-to-go %) birth-dates)]
     (vec (map #(vector %1 %2) (repeat 5) values))))
 
-(def DAYS 256)
-(def sample [3 4 3 1 2])
-;(def sample [5,1,5,3,2,2,3,1,1,4,2,4,1,2,1,4,1,1,5,3,5,1,5,3,1,2,4,4,1,1,3,1,1,3,1,1,5,1,5,4,5,4,5,1,3,2,4,3,5,3,5,4,3,1,4,3,1,1,1,4,5,1,1,1,2,1,2,1,1,4,1,4,1,1,3,3,2,2,4,2,1,1,5,3,1,3,1,1,4,3,3,3,1,5,2,3,1,3,1,5,2,2,1,2,1,1,1,3,4,1,1,1,5,4,1,1,1,4,4,2,1,5,4,3,1,2,5,1,1,1,1,2,1,5,5,1,1,1,1,3,1,4,1,3,1,5,1,1,1,5,5,1,4,5,4,5,4,3,3,1,3,1,1,5,5,5,5,1,2,5,4,1,1,1,2,2,1,3,1,1,2,4,2,2,2,1,1,2,2,1,5,2,1,1,2,1,3,1,3,2,2,4,3,1,2,4,5,2,1,4,5,4,2,1,1,1,5,4,1,1,4,1,4,3,1,2,5,2,4,1,1,5,1,5,4,1,1,4,1,1,5,5,1,5,4,2,5,2,5,4,1,1,4,1,2,4,1,2,2,2,1,1,1,5,5,1,2,5,1,3,4,1,1,1,1,5,3,4,1,1,2,1,1,3,5,5,2,3,5,1,1,1,5,4,3,4,2,2,1,3])
+(def DAYS 80)
+;(def sample [3 4 3 1 2])
+(def sample [5,1,5,3,2,2,3,1,1,4,2,4,1,2,1,4,1,1,5,3,5,1,5,3,1,2,4,4,1,1,3,1,1,3,1,1,5,1,5,4,5,4,5,1,3,2,4,3,5,3,5,4,3,1,4,3,1,1,1,4,5,1,1,1,2,1,2,1,1,4,1,4,1,1,3,3,2,2,4,2,1,1,5,3,1,3,1,1,4,3,3,3,1,5,2,3,1,3,1,5,2,2,1,2,1,1,1,3,4,1,1,1,5,4,1,1,1,4,4,2,1,5,4,3,1,2,5,1,1,1,1,2,1,5,5,1,1,1,1,3,1,4,1,3,1,5,1,1,1,5,5,1,4,5,4,5,4,3,3,1,3,1,1,5,5,5,5,1,2,5,4,1,1,1,2,2,1,3,1,1,2,4,2,2,2,1,1,2,2,1,5,2,1,1,2,1,3,1,3,2,2,4,3,1,2,4,5,2,1,4,5,4,2,1,1,1,5,4,1,1,4,1,4,3,1,2,5,2,4,1,1,5,1,5,4,1,1,4,1,1,5,5,1,5,4,2,5,2,5,4,1,1,4,1,2,4,1,2,2,2,1,1,1,5,5,1,2,5,1,3,4,1,1,1,1,5,3,4,1,1,2,1,1,3,5,5,2,3,5,1,1,1,5,4,3,4,2,2,1,3])
 (def data (vec (map #(vector %1 %2) sample (repeat DAYS))))
 
 (defn to-frequencies [a-vector]
   (frequencies (sort a-vector)))
 
 
-(defn dummy [[a b]]
-  (+ a b))
-
-
 (defn multicall [f [kv n]]
-  (repeat n (f kv)))
+  (let [result (f kv)]
+    (map #(vector % n) result )))
 
 (defn how-many [frequency-list]
   (->> frequency-list
     (map second ,,,)
     (reduce + 0)))
 
-; (->> data
-;   (to-frequencies ,,,)
-;   (take 2 ,,,)
-;   (mapcat #(multicall fish-maker %) ,,,)
-;   (reduce into [] ,,,)
-;   (to-frequencies ,,,)
-;   (how-many ,,,)
-;   )
+; (println
+;   (->> data
+;     (to-frequencies ,,,)
+;     (mapcat #(multicall fish-maker %) ,,,)
+;     (reduce (fn [d [k n]] (update d [k n] (fnil inc 0))) {} ,,,)    ; EQUIVALENT TO PYTHON'S DEFAULT DICT USED AS COUNTER
+;     )
+; )
 
-; (multicall dummy [[2 3] 4])
 
+(defn consolidate [m [[counter days] number]]
+  (if-let [current-number (m [counter days])]
+    (update m [counter days] + number)
+    (assoc m [counter days] number)))
 
 (defn -main [& args]
   (time
     (println
-      (loop [all-fish (to-frequencies data) result (count data)]
-        (if (empty? all-fish)
-          result
-          (let [next-generation (->> all-fish
-                                  (mapcat #(multicall fish-maker %) ,,,)
-                                  (reduce into [] ,,,)
-                                  (to-frequencies ,,,)
-                                  )]
-            (println (count next-generation))
-            (recur next-generation (+ result (how-many next-generation)))))))))
+      (let [first-generation (to-frequencies data)]
+        (loop [current-generation first-generation result (how-many first-generation)]
+          (if (empty? current-generation)
+            result
+            (let [next-generation (->> current-generation
+                                    (mapcat #(multicall fish-maker %) ,,,)
+                                    (reduce consolidate {} ,,,)
+                                    )]
+              (recur next-generation (+ result (how-many next-generation))))))))))
 
 
-
+(println (-main))
