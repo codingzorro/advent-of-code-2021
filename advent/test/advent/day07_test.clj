@@ -11,19 +11,43 @@
 (deftest test-load-data
     (testing "load-data function"
       (is (= (load-data test-data)
-             [#advent.day07.Crabs{:value 0, :position 1}
-              #advent.day07.Crabs{:value 1, :position 2}
-              #advent.day07.Crabs{:value 2, :position 3}
-              #advent.day07.Crabs{:value 4, :position 1}
-              #advent.day07.Crabs{:value 7, :position 1}
-              #advent.day07.Crabs{:value 14, :position 1}
-              #advent.day07.Crabs{:value 16, :position 1}]))))
+             [#advent.day07.Crabs{:position 0, :number 1}
+              #advent.day07.Crabs{:position 1, :number 2}
+              #advent.day07.Crabs{:position 2, :number 3}
+              #advent.day07.Crabs{:position 4, :number 1}
+              #advent.day07.Crabs{:position 7, :number 1}
+              #advent.day07.Crabs{:position 14, :number 1}
+              #advent.day07.Crabs{:position 16, :number 1}]))))
 
+
+(deftest test-split
+  (testing "split function"
+    (let [data (load-data test-data)]
+      (is (=
+            (split (second data) data)
+            [#advent.day07.Crabs{:position 1, :number 2}
+             '(#advent.day07.Crabs{:position 0, :number 1}
+               #advent.day07.Crabs{:position 2, :number 3}
+               #advent.day07.Crabs{:position 4, :number 1}
+               #advent.day07.Crabs{:position 7, :number 1}
+               #advent.day07.Crabs{:position 14, :number 1}
+               #advent.day07.Crabs{:position 16, :number 1})])))))
 
 (deftest test-fuel
   (testing "fuel function"
-    (let [crabs (load-data test-data)
-          crabs-0 (crabs 0)
-          crabs-2 (crabs 2)]
-      (is (= (fuel crabs-0 crabs-2) 6)))))
+    (is (= (fuel 2 #advent.day07.Crabs{:position 2, :number 3}) 0))
+    (is (= (fuel 2 #advent.day07.Crabs{:position 4, :number 1}) 2))
+    (is (= (fuel 2 #advent.day07.Crabs{:position 16, :number 1}) 14))
+    ))
+
+(deftest test-total-fuel
+  (testing "total fuel"
+  (is (= (total-fuel 1 test-data) 41))
+  (is (= (total-fuel 2 test-data) 37))
+  (is (= (total-fuel 3 test-data) 39))
+  (is (= (total-fuel 10 test-data) 71))
+  ))
+
+(least-fuel test-data)
+
 
