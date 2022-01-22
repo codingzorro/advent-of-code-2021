@@ -8,7 +8,22 @@
 (def test-data [16 1 2 0 4 2 7 1 2 14])
 
 
-(deftest test-other-crabs
-    (testing "see if you can remove the zero-th element"
-      (is (other-crabs (sort test-data) (vec '(1 1 2 2 2 4 7 14 16))))))
+(deftest test-load-data
+    (testing "load-data function"
+      (is (= (load-data test-data)
+             [#advent.day07.Crabs{:value 0, :position 1}
+              #advent.day07.Crabs{:value 1, :position 2}
+              #advent.day07.Crabs{:value 2, :position 3}
+              #advent.day07.Crabs{:value 4, :position 1}
+              #advent.day07.Crabs{:value 7, :position 1}
+              #advent.day07.Crabs{:value 14, :position 1}
+              #advent.day07.Crabs{:value 16, :position 1}]))))
+
+
+(deftest test-fuel
+  (testing "fuel function"
+    (let [crabs (load-data test-data)
+          crabs-0 (crabs 0)
+          crabs-2 (crabs 2)]
+      (is (= (fuel crabs-0 crabs-2) 6)))))
 
