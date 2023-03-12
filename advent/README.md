@@ -1,10 +1,10 @@
-# advent
+# A beginner's attempt to solve the Advent of Code 2021 challenge
 
-A Clojure library designed to ... well, that part is up to you.
+If I did it again, the code would be completely different.
 
 ## Usage
 
-FIXME
+You may use this code as you please - but you should not program Clojure like this.
 
 ## License
 
